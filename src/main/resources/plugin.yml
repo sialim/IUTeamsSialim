@@ -1,0 +1,4 @@
+name: IUTeamsSialim
+version: '${project.version}'
+main: me.sialim.iuteamssialim.IUTeamsSialim
+api-version: '1.20'
