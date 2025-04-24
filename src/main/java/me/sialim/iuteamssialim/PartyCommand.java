@@ -1,22 +1,23 @@
 package me.sialim.iuteamssialim;
 
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
-public class PartyCommand implements CommandExecutor {
+public class PartyCommand implements TabExecutor {
+    private IUTeamsSialim plugin;
     private PartyManager manager;
 
-    public PartyCommand(PartyManager manager) {
-        this.manager = manager;
+    public PartyCommand(IUTeamsSialim plugin) {
+        this.plugin = plugin;
+        this.manager = plugin.partyManager;
     }
 
     @Override
@@ -89,6 +90,32 @@ public class PartyCommand implements CommandExecutor {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
+        if (!(sender instanceof Player p)) return List.of();
+
+        if (args.length == 1) {
+            return List.of("create", "invite", "accept", "deny", "leave")
+                    .stream()
+                    .filter(sub -> sub.startsWith(args[0].toLowerCase()))
+                    .toList();
+        }
+
+        if (args.length == 2) {
+            String sub = args[0].toLowerCase();
+
+            if (sub.equals("invite")) {
+                return Bukkit.getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .filter(name -> name.toLowerCase().startsWith(args[1].toLowerCase()))
+                        .filter(name -> !name.equalsIgnoreCase(p.getName()))
+                        .toList();
+            }
+        }
+
+        return List.of();
     }
 }
 
